@@ -4,8 +4,10 @@ JSON-handle build by tauri
 
 ## Build
 
+```
 pnpm install
 pnpm tauri build
+```
 
 ## Home Page
 
