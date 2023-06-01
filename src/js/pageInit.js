@@ -1,9 +1,15 @@
-chrome.extension = chrome.extension || {
-	sendRequest : function (o, f) {
-		config.mode = '';
-		f({});
-	}
-};
+// chrome.extension = chrome.extension || {
+// 	sendRequest : function (o, f) {
+// 		config.mode = '';
+// 		f({});
+// 	}
+// };
+
+
+window.jsonHandleSendRequest = function (o, f) {
+	config.mode = '';
+	f({});
+}
 
 
 
