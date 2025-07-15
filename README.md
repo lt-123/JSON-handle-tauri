@@ -5,8 +5,8 @@ JSON-handle build by tauri
 ## Build
 
 ```
-pnpm install
-pnpm tauri build
+cargo install tauri-cli --version '^2.0.0' --locked
+cargo tauri build
 ```
 
 ## Home Page
