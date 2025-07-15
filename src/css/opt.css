@@ -21,6 +21,12 @@ a {
 a:hover {
 	text-decoration:none;
 }
+#fontUse, #fontCustomName {
+    width: 12em;
+    height: 1.8em;
+    padding: .1em .3em;
+    box-sizing: border-box;
+}
 .ad-list ul {
 	padding-left:15px;
 }

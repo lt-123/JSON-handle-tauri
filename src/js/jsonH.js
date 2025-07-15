@@ -1,12 +1,12 @@
 
 JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (modName, JH, $$) {
-	
-		var _interface = [];
-		
-		
-	
 
-	
+		var _interface = [];
+
+
+
+
+
 
 		var _pri_static = {
 			langOut : function (key) {},
@@ -14,17 +14,17 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			// .langID_msg_1
 			langPack : {}
 		};
-	
 
-	
+
+
 		var _pro_static = {
-			
+
 		};
-	
+
 
 	var _pub_static = function (sJson) {
 		var _checkArgs, _parseDOM, _init, _uiEvt, _custEvt, _airEvt, _main, _this = this, _args = arguments, _pri = {}, _pro = {}, _pub = {__varyContext_:function (pro, pub) {_pro = pro;_pub = pub;}}, _mod, _base, _parent;
-		
+
 
 		_pri["checkEvalAuthority"] = (function () {
 			var _fun = function () {
@@ -32,7 +32,7 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 					$(_pri.node['jsObjEnterOk']).hide();
 				}
 			};
-		
+
 			//_fun["isOk"] = function () {
 				//try{
 					//Function('var a;');
@@ -43,9 +43,10 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			//};
 
 			_fun["isOk"] = function () {
-				return !~location.href.indexOf('chrome-extension:');
+				return _pub_static.oIni.jsonEngine === 'JH-JSON';
+				// return !~location.href.indexOf('chrome-extension:');
 			};
-		
+
 
 			return _fun;
 
@@ -57,36 +58,42 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			_pub = _mod.pub;
 			_parent = _mod.parent;
 
-			_pri.checkEvalAuthority();
+			// _pri.checkEvalAuthority();
 
-			
+
 			//_pub_static.oIni.times = 1;
-
+			// if (_pub_static.oIni.jsonEngine === 'JSON') {
+			// 	JSON5 = JSON;
+			// }
 			_pro.oTreeNav = $$.jsonH.nav('#jsonNav');
+			_pro.oTreeNav.oIni = _pub_static.oIni;
 			if(_pub_static.oIni.renderMode) {
-				$('html')[0].className = _pub_static.oIni.renderMode;
+				$('html').removeClass('rich').addClass(_pub_static.oIni.renderMode);
+			}
+			if(_pub_static.oIni.showTextFormat) {
+				$('html').addClass('showTextFormat');
 			}
 			_pro.oTreeNav.buildCallback = function () {
-				top.postMessage({
-					cmd : 'jhLoadedOk'
-				}, '*');
-				if(_pub_static.oIni.times % 20 === 0) {
+				// if(_pub_static.oIni.times % 20 === 0) {
 					//var oAd = $$.ad().getAd(function (oAd) {
 						//if(oAd) {
 							//_pri.showAd(oAd);
 							//_pub.showPanel();
 						//}
 					//});
-				}
+				// }
 				if(_pub_static.oIni.saveKeyStatus) {
 					_pri.actCollapsePath();
 				}
+				// $('.elmBlock', JH.e('#jsonNav')).each(function (iIndex, eDiv) {
+				// 	eDiv.title = JSON5.stringify(eDiv.oData,0,4);
+				// });
 			};
-			_pro.oTreeNav.changeFlodCallback = function () {
-				var aCollapsePath = [];
-				$('.elmBlock').each(function () {
-					if(($(this).hasClass('array') || $(this).hasClass('object')) && !$(this).hasClass('open')) {
-						aCollapsePath.push(this.getAttribute('nodePath'));
+			_pro.oTreeNav.changeFlodCallback = function (bNotClearPathSave) {
+				var aCollapsePath = bNotClearPathSave ? (_pub_static.oIni.collapsePath || []) : [];
+				document.querySelectorAll('.elmBlock').forEach(function (elm) {
+					if(($(elm).hasClass('array') || $(elm).hasClass('object')) && !$(elm).hasClass('open')) {
+						aCollapsePath.push(elm.getAttribute('nodePath'));
 					}
 				});
 				//console.log(aCollapsePath);
@@ -100,36 +107,29 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			});
 
 			_pri.oTreeNavListener = JH.event.buildListener(_pub);
-			
-			_pri.oTreeNavListener.add(_pro.oTreeNav, 'clickElm', function () {
-				if(!_pri.holdPanel) {
-					_pub.showPanel();
+
+			_pri.oTreeNavListener.add(_pro.oTreeNav, 'clickElm', function (evt) {
+				if(!_pri.holdPanelMode) {
+					if(evt.evt
+						&&  (
+							(_pub_static.oIni.panelMode === 'leftClick' && evt.evt.which === 1)
+							|| (_pub_static.oIni.panelMode === 'rightClick' && evt.evt.which === 3)
+						)
+					) {
+						_pub.showPanel();
+					}
 				}
 			});
-			
-			if(_pri.goEnterInput) {
-				_pri.showEnterInputDialog(sJson);
-			}else{
-				try{
-					_pro.oTreeNav.build(_pro.oTreeNav.JSON.parse(sJson));
-				}catch(e) {
-					top.postMessage({
-						cmd : 'jhLoadedError',
-						msg : e.message
-					}, '*');
-				}
-				
-			}
-			
+
+
 			_pub.checkIcoAsFolderBtn($('#icoAsFolder')[0]);
 			_pub.checkShowValueInNav($('#showValueInNav')[0]);
+			_pub.checkShowArrIndexInNav($('#showArrIndexInNav')[0]);
 			_pub.checkShowArrLeng($('#showArrLeng')[0]);
 			_pub.checkShowIco($('#showIco')[0]);
 			_pub.checkShowImg($('#showImg')[0]);
-			
-			
-			_pub_static.language = _pub_static.oIni.lang;
-			_pub.resetLang();
+
+
 
 			var iSI = setInterval(function() {try{
 				if(_pri.sTempShowValue != _pri.node['showValue'].value) {
@@ -141,48 +141,57 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			$$.listenResizeWin.add(_pri.resizeLayout);
 			_pri.resizeLayout($$.listenResizeWin.checkResize());
 			document.addEventListener('copy', function () {
+				$('#copyTips').show();
 				$('#copyTips').addClass('show');
 				$('#copyTips').removeClass('hide');
 				setTimeout(function() {
 					$('#copyTips').removeClass('show');
 					$('#copyTips').addClass('hide');
 				});
+				setTimeout(function() {
+					$('#copyTips').hide();
+				},3000);
 			});
 
 
+			// if(_pub_static.oIni.times % 9 === 0) {
+			// 	_pri.getVer(function (iVer) {
+			// 		if(iVer !== _pub_static.oIni.adVer) {
+			// 			_pri.getAdData(_pub_static.oIni.times, function (oResp) {
+			// 				var oAdData = oResp.data;
+			// 				try{
+			// 					_pub_static.oIni.adList = oAdData.adList;
+			// 					_pub_static.oIni.adVer = oAdData.adVer;
+			// 					_pub_static.oIni.adIndex = 0;
+			// 					// localStorage['jhIni'] = JSON.stringify(_pub_static.oIni);
+			// 				}catch(e) {}
+			// 			});
+			// 		}
+			// 	});
+			// }
 
-
-			if(_pub_static.oIni.times % 9 === 0) {
-				_pri.getVer(function (iVer) {
-					if(iVer !== _pub_static.oIni.adVer) {
-						_pri.getAdData(_pub_static.oIni.times, function (oResp) {
-							var oAdData = oResp.data;
-							try{
-								_pub_static.oIni.adList = oAdData.adList;
-								_pub_static.oIni.adVer = oAdData.adVer;
-								_pub_static.oIni.adIndex = 0;
-								localStorage['jhIni'] = JSON.stringify(_pub_static.oIni);
-							}catch(e) {}
-						});
-					}
-				});
-			}
-
+			_pub_static.language = _pub_static.oIni.lang;
+			_pub.resetLang();
 			$('#panel').show();
 
 		};
-		
 
-		
+
+
 		_checkArgs = function () {
-			if(!sJson) {
+			var jsonStr = null;
+			if (sJson && !sJson.indexOf('JH-page:')) {
+				jsonStr = sJson.slice(8);
+			}
+			if(!sJson || jsonStr) {
 				_pri.goEnterInput = true;
+				sJson = jsonStr || sJson;
 			}
 		};
-		
 
 
-		
+
+
 		_parseDOM = function () {
 
 			_pri.node = {
@@ -197,6 +206,9 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 				enterInputTips : JH.e('#enterInputTips'),
 				jsObjEnterOk : JH.e('#jsObjEnterOk'),
 				copyValue : JH.e('#copyValue'),
+				deURI : JH.e('#deURI'),
+				toolsOpen : JH.e('#toolsOpen'),
+				aLine : JH.e('#aLine'),
 				copyTips : JH.e('#copy-tips'),
 				rcmd : JH.e('#rcmd'),
 				optBtn : JH.e('#optBtn'),
@@ -205,10 +217,10 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			};
 
 		};
-		
 
 
-		
+
+
 		_uiEvt = function () {
 			$('#saveBtn').on('click', _pri.uiEvtCallback.clickSaveBtn);
 			$('#showIco').on('click', _pri.uiEvtCallback.clickShowIco);
@@ -219,6 +231,7 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			$('#gotoCur').on('click', _pri.uiEvtCallback.clickGotoCur);
 			//$('#saveFile').on('click', _pri.uiEvtCallback.clickSaveFile);
 			$('#showValueInNav').on('click', _pri.uiEvtCallback.clickShowValueInNav);
+			$('#showArrIndexInNav').on('click', _pri.uiEvtCallback.clickShowArrIndexInNav);
 			$('#showArrLeng').on('click', _pri.uiEvtCallback.clickShowArrLeng);
 			$('#showImg').on('click', _pri.uiEvtCallback.clickShowImg);
 			$(_pri.node['undoBtn']).on('click', _pri.uiEvtCallback.clickUndoBtn);
@@ -226,6 +239,9 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			$(_pri.node['minBtn']).on('click', _pri.uiEvtCallback.clickMinBtn);
 			$(_pri.node['jsObjEnterOk']).on('click', _pri.uiEvtCallback.jsObjEnterOkClick);
 			$(_pri.node['copyValue']).on('click', _pri.uiEvtCallback.clickCopyValue);
+			$(_pri.node['deURI']).on('click', _pri.uiEvtCallback.clickDeURI);
+			$(_pri.node['toolsOpen']).on('click', _pri.uiEvtCallback.clickToolsOpen);
+			$(_pri.node['aLine']).on('click', _pri.uiEvtCallback.clickALine);
 			$(_pri.node['rcmd']).on('click', _pri.uiEvtCallback.clickRcmd);
 			$(_pri.node['closeAd']).on('click', _pri.uiEvtCallback.clickCloseAd);
 			$(_pri.node['optBtn']).on('click', _pri.uiEvtCallback.clickOptBtn);
@@ -240,20 +256,24 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 				}
 			});
 
+			$('#toolsBtn').on('click', function () {
+				_pri.openTool();
+			});
+
 		};
-		
 
 
-		
+
+
 		_custEvt = function () {
-			
+
 		};
-		
 
 
-		
+
+
 		_airEvt = function () {
-			
+
 		};
 
 
@@ -280,9 +300,10 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 		};
 
 		_pri["strToObj"] = function (s) {
-			var sFun = 'var o = ' + s + ';return o;';
-			var f = new window['Functio'+'n'.toString()](sFun);
-			var o = f();
+			// var sFun = 'var o = ' + s + ';return o;';
+			// var f = new window['Functio'+'n'.toString()](sFun);
+			// var o = f();
+			var o = JSON5.parse(s);
 			return o;
 		};
 
@@ -318,7 +339,7 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			"uiEvtCallback" : {
 				clickCopyValue : function () {
 					var eV = $('<textarea></textarea>')[0];
-					eV.value = JSON.stringify($('#showValue').prop('oData'), 0, 4);
+					eV.value = jsonhandleCommon.JSON.stringify($('#showValue').prop('oData'), 0, 4);
 					if(eV.value[0] === '"' && eV.value.slice(-1) === '"') {
 						eV.value = eV.value.slice(1, -1);
 					}
@@ -327,11 +348,50 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 					document.execCommand('copy');
 					$(eV).remove();
 				},
+				clickDeURI : function () {
+					var eV = $('#showValue')[0];
+					var sT = $('#showValue').prop('oData');
+					try{
+						var sR = decodeURIComponent(eV.value);
+						eV.value = sR;
+					}catch(e) {
+						$('#deError').html('deURI error');
+						$('#deError').addClass('show');
+						$('#deError').removeClass('hide');
+						setTimeout(function() {
+							$('#deError').removeClass('show');
+							$('#deError').addClass('hide');
+						}, 3000);
+					}
+				},
+				clickToolsOpen : function () {
+					var eV = $('#showValue')[0];
+					var sT = $('#showValue').prop('oData');
+					window.valueCurrent = (oData => {
+						var sJson = jsonhandleCommon.JSON.stringify(oData);
+						if (typeof oData == 'string') {
+							sJson = sJson.slice(1, -1);
+						}
+						return sJson;
+					})($('#showValue').prop('oData'));
+
+					_pri.openTool();
+					
+				},
+				clickALine : function () {
+					var eV = $('#showValue')[0];
+					eV.value = jsonhandleCommon.JSON.stringify($('#showValue').prop('oData'));
+				},
 				clickGotoCur : function () {
-					var eCurr = _pro.oTreeNav.gotoCurrElm();
+					var eCur = _pro.oTreeNav.getCur();
+					if(eCur) {
+						_pro.oTreeNav.gotoCurrElm();
+					}else{
+						_pri.showMsg(_pri.oLang.getStr('msg_1'));
+					}
 				},
 				clickMinBtn : function () {
-					_pri.holdPanel = true;
+					_pri.holdPanelMode = true;
 					if($(_pri.node['panel']).hasClass('min')) {
 						_pub.showPanel();
 					}else{
@@ -358,21 +418,23 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 				},
 				jsObjEnterOkClick : function () {
 					_pri.inputFormatIsJsObj = true;
-					if(confirm('! Make sure the code is secure, The code will run as javascript !\n! 请确保内容是安全的, 输入内容将按javascript脚本执行 !')) {
+					// if(confirm('! Make sure the code is secure, The code will run as javascript !\n! 请确保内容是安全�? 输入内容将按javascript脚本执行 !')) {
 						_pri.uiEvtCallback.submitEnterForm();
-					}
+					// }
 				},
 				submitEnterForm : function (evt) {
 					if(evt) {
 						evt.preventDefault();
 					}
 					_pri.hasError = false;
+					var jsonObj = null;
 
 					var sData = _pri.node['enterValue'].value;
 					var sTxt;
 					if(_pri.inputFormatIsJsObj) {
 						try{
-							sTxt = JSON.stringify(_pri.strToObj(sData));
+							jsonObj = _pri.strToObj(sData);
+							sTxt = JSON5.stringify(jsonObj);
 						}catch(e) {
 							_pri.node['enterValue'].style.color = 'red';
 							_pri.hasError = true;
@@ -380,37 +442,43 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 							_pri.inputFormatIsJsObj = false;
 							return false;
 						}
-						
+
 					}
 					sTxt = sTxt || _pri.filterStrFormat(sData);
+					var oD;
 					try{
-						_pro.oTreeNav.build(_pro.oTreeNav.JSON.parse(sTxt));
+						// JSON.parse(sTxt);
+						_pro.oTreeNav.build(jsonObj || jsonhandleCommon.JSON.parse(sTxt));
 						_pri.hideEnterInputDialog();
 					}catch(e) {
 						try{
-							var sTempData = sData.slice(sData.indexOf('(')+1, sData.lastIndexOf(')'));
-							_pro.oTreeNav.build(_pro.oTreeNav.JSON.parse(sTempData));
-							_pri.hideEnterInputDialog();
+							if (/^[\w\.]+\(.+\);?$/.test(sData)) {
+								var sTempData = sData.slice(sData.indexOf('(')+1, sData.lastIndexOf(')'));
+								// JSON.parse(sTempData);
+								_pro.oTreeNav.build(jsonhandleCommon.JSON.parse(sTempData));
+								_pri.hideEnterInputDialog();
+							}else{
+								throw e;
+							}
 						}catch(e) {
 							_pri.node['enterInputTips'].style.color = 'red';
 							_pri.showErrorTips(sData);
 							_pri.hasError = true;
 						}
 					}
-					if(_pub_static.oIni.holdPanel) {
+					if(_pub_static.oIni.panelMode === 'always') {
 						_pub.showPanel(true);
 					}else{
 						_pub.hidePanel(true);
 					}
-					
+
 					if(!_pri.hasError) {
 						$('#errorTips, #sigh').hide();
 					}else{
 						$('#errorTips, #sigh').show();
 					}
-					
+
 					_pri.inputFormatIsJsObj = false;
-					
 					return false;
 				},
 				clickUndoBtn : function () {
@@ -435,7 +503,8 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 					try{
 						//eval('(' + $('#showValue').val() + ');');
 						var sTxt = _pri.filterStrFormat($('#showValue').val());
-						oResult = _pro.oTreeNav.JSON.parse(sTxt);
+						// JSON.parse(sTxt);
+						oResult = jsonhandleCommon.JSON.parse(sTxt);
 						//debugger;
 						if($('#showKey').val() !== $('#showKey').attr('oldValue')) {
 							var sNewKey = $('#showKey').val().replace(/\'/g, '\\\'');
@@ -447,7 +516,7 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 							}else{
 								sEval = sEval.slice(5);
 							}
-							
+
 						}
 
 
@@ -465,7 +534,7 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 						//debugger;
 						_pro.oTreeNav.build(oData);
 						_pro.oTreeNav.collapseAll();
-						_pro.oTreeNav.expandCur(sCurId);
+						_pro.oTreeNav.expandCur(sCurId, true);
 						_pri.node['saveFile'].disabled = false;
 					}catch(e) {
 						_pri.hasError = true;
@@ -490,6 +559,11 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 						showValue : _pub.checkShowValueInNav(this)
 					});
 				},
+				clickShowArrIndexInNav : function () {
+					_pri.setIniRequest.send({
+						showArrIndexInNav : _pub.checkShowArrIndexInNav(this)
+					});
+				},
 				clickShowArrLeng : function () {
 					_pri.setIniRequest.send({
 						showArrLeng : _pub.checkShowArrLeng(this)
@@ -509,10 +583,11 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 					_pro.oTreeNav.expandAll(this);
 				},
 				clickExpandCur : function () {
+                    let bAct = true;
 					var eCur = _pro.oTreeNav.getCur();
 					if(eCur) {
 						_pro.oTreeNav.collapseAll();
-						_pro.oTreeNav.expandCur();
+						_pro.oTreeNav.expandCur(null, bAct||true);
 					}else{
 						_pri.showMsg(_pri.oLang.getStr('msg_1'));
 					}
@@ -534,6 +609,10 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 				_pri.setIniRequest.send({
 					adShoot : _pub_static.oIni.adShoot
 				});
+			},
+			"openTool" : function () {
+				var jsonH_url = chrome.runtime.getURL("trans.html");
+				chrome.windows.create({url: jsonH_url, type: "popup", width: 876, height: 768, setSelfAsOpener: true});
 			},
 			"getVer" : function (cb) {
 				//var sStatsPicUrl = 'http://jsonhandle-addondownload.stor.sinaapp.com/jh.png';
@@ -565,7 +644,7 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			},
 			"pushToHistory" : function (aData) {
 				// [oData, sCurId]
-				_pri.historyBackData = [_pro.oTreeNav.JSON.parse(_pro.oTreeNav.JSON.stringify(aData[0])), aData[1]];
+				_pri.historyBackData = [jsonhandleCommon.JSON.parse(jsonhandleCommon.JSON.stringify(aData[0])), aData[1]];
 			},
 			"showErrorTips" : function (sJson) {
 				var oJsonCheck = oLineCode(sJson);
@@ -604,7 +683,7 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 				},4000);
 			},
 			"showEnterInputDialog" : function (sJson) {
-				sJson = sJson || '\u007b\u000d\u000a\u0020\u0020\u0020\u0020\u0022\u006c\u0031\u0022\u003a\u0020\u007b\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0022\u006c\u0031\u005f\u0031\u0022\u003a\u0020\u005b\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0022\u006c\u0031\u005f\u0031\u005f\u0031\u0022\u002c\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0022\u006c\u0031\u005f\u0031\u005f\u0032\u0022\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u005d\u002c\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0022\u006c\u0031\u005f\u0032\u0022\u003a\u0020\u007b\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0022\u006c\u0031\u005f\u0032\u005f\u0031\u0022\u003a\u0020\u0031\u0032\u0031\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u007d\u000d\u000a\u0020\u0020\u0020\u0020\u007d\u002c\u000d\u000a\u0020\u0020\u0020\u0020\u0022\u006c\u0032\u0022\u003a\u0020\u007b\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0022\u006c\u0032\u005f\u0031\u0022\u003a\u0020\u006e\u0075\u006c\u006c\u002c\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0022\u006c\u0032\u005f\u0032\u0022\u003a\u0020\u0074\u0072\u0075\u0065\u002c\u000d\u000a\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0020\u0022\u006c\u0032\u005f\u0033\u0022\u003a\u0020\u007b\u007d\u000d\u000a\u0020\u0020\u0020\u0020\u007d\u000d\u000a\u007d';
+				sJson = sJson || '\u007b\u000a\u0009\u0022\u006c\u0031\u0022\u003a\u0020\u007b\u000a\u0009\u0009\u0022\u006c\u0031\u005f\u0031\u0022\u003a\u0020\u005b\u000a\u0009\u0009\u0009\u0022\u006c\u0031\u005f\u0031\u005f\u0031\u0022\u002c\u000a\u0009\u0009\u0009\u0022\u006c\u0031\u005f\u0031\u005f\u0032\u0022\u000a\u0009\u0009\u005d\u002c\u000a\u0009\u0009\u0022\u006c\u0031\u005f\u0032\u0022\u003a\u0020\u005b\u000a\u0009\u0009\u0009\u007b\u000a\u0009\u0009\u0009\u0009\u0022\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u006e\u0061\u006d\u0065\u0022\u003a\u0020\u0022\u0055\u0052\u0049\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0022\u002c\u000a\u0009\u0009\u0009\u0009\u0022\u0073\u0061\u006d\u0070\u006c\u0065\u0022\u003a\u0020\u0022\u0068\u0074\u0074\u0070\u0073\u0025\u0033\u0041\u0025\u0032\u0046\u0025\u0032\u0046\u006a\u0073\u006f\u006e\u0068\u0061\u006e\u0064\u006c\u0065\u002e\u0073\u0069\u006e\u0061\u0061\u0070\u0070\u002e\u0063\u006f\u006d\u0022\u000a\u0009\u0009\u0009\u007d\u002c\u000a\u0009\u0009\u0009\u007b\u000a\u0009\u0009\u0009\u0009\u0022\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u006e\u0061\u006d\u0065\u0022\u003a\u0020\u0022\u0042\u0061\u0073\u0065\u0036\u0034\u0022\u002c\u000a\u0009\u0009\u0009\u0009\u0022\u0073\u0061\u006d\u0070\u006c\u0065\u0022\u003a\u0020\u0022\u0061\u0048\u0052\u0030\u0063\u0048\u004d\u0036\u004c\u0079\u0039\u0071\u0063\u0032\u0039\u0075\u0061\u0047\u0046\u0075\u005a\u0047\u0078\u006c\u004c\u006e\u004e\u0070\u0062\u006d\u0046\u0068\u0063\u0048\u0041\u0075\u0059\u0032\u0039\u0074\u0022\u000a\u0009\u0009\u0009\u007d\u000a\u0009\u0009\u005d\u000a\u0009\u007d\u002c\u000a\u0009\u0022\u006c\u0032\u0022\u003a\u0020\u007b\u000a\u0009\u0009\u0022\u006c\u0032\u005f\u0031\u0022\u003a\u0020\u006e\u0075\u006c\u006c\u002c\u000a\u0009\u0009\u0022\u006c\u0032\u005f\u0032\u0022\u003a\u0020\u0074\u0072\u0075\u0065\u002c\u000a\u0009\u0009\u0022\u006c\u0032\u005f\u0033\u0022\u003a\u0020\u007b\u007d\u000a\u0009\u007d\u000a\u007d';
 				//sJson = JSON.stringify({
 					//"l1": {
 						//"l1_1": [
@@ -629,6 +708,7 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 						//"l2_3": {}
 					//}
 				//});
+				// sJson = ss;
 				$('#mask').show();
 				_pri.node['enterValue'].value = sJson;
 			},
@@ -639,13 +719,13 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 		});
 
 		JH.mergePropertyFrom(_pro, {
-			
-			
-		
+
+
+
 		});
 
 		JH.mergePropertyFrom(_pub, {
-			
+
 			"resetLang" : function () {
 				_pri.oLang = $$.lang(_pub_static.language);
 				_pri.oLang.setPage();
@@ -663,13 +743,21 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 				}
 				return elm.checked;
 			},
+			"checkShowArrIndexInNav" : function (elm) {
+				if(elm.checked) {
+					$('#jsonNav').addClass('showArrIndexInNav');
+				}else{
+					$('#jsonNav').removeClass('showArrIndexInNav');
+				}
+				return elm.checked;
+			},
 			"checkShowArrLeng" : function (elm) {
 				if(elm.checked) {
 					$('#jsonNav').addClass('show-leng');
 				}else{
 					$('#jsonNav').removeClass('show-leng');
 				}
-				
+
 				$('#jsonNav').addClass('lengMode-'+_pub_static.oIni.showLengthMode);
 				return elm.checked;
 			},
@@ -718,16 +806,16 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			},
 			"destroy" : function(){
 				if(_pub) {
-					
-					
+
+
 					_pri = _pro = _pub = null;
 				}
 			}
-		
+
 		});
 
 
-		
+
 		_init= function(){
 			if(_checkArgs()) {
 				return false;
@@ -735,20 +823,40 @@ JH.mod.add(['jsonH.nav', 'listenResizeWin', 'ad', 'lang'], 'jsonH', function (mo
 			_parseDOM();
 			_main();
 			_uiEvt();
+			if(_pri.goEnterInput) {
+				_pri.showEnterInputDialog(sJson);
+			}else{
+				try{
+					_pub.oJson = jsonhandleCommon.JSON.parse(sJson);
+					_pro.oTreeNav.build(_pub.oJson);
+				}catch(e) {
+					console.log(e);
+					_pri.showEnterInputDialog(sJson);
+					top.postMessage({
+						cmd : 'jhLoadedError',
+						msg : e.message
+					}, '*');
+				}
+			}
 			_custEvt();
 			_airEvt();
+            
+            top.postMessage({
+                cmd : 'jhJsLoaded',
+                msg : null
+            }, '*');
 		};
 		_init();
-		
+
 
 
 		return _pub;
-		
+
 	};
 
 	return JH.mergePropertyFrom(_pub_static, {
-	
+
 		language : 'en'
-	
+
 	});
 });

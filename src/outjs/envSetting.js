@@ -31,7 +31,7 @@ JH.request = JH.newFun(function (JH) {
 				var oRe;
 				var buildSend = function (fn) {
 					return {
-						send : function (oRequestData) {
+						send : function (oRequestData) {//console.log(oRequestData);
 							fn(oRequestData, function (oData) {
 								if(oSpec && oSpec.succeed) {
 									oSpec.succeed.apply(_oSrc, [oData, oRequestData]);
@@ -44,7 +44,7 @@ JH.request = JH.newFun(function (JH) {
 				switch(sKey) {
 					case 'openTab':
 						oRe = buildSend(function (oRequestData, fResponse) {
-							window.jsonHandleSendRequest({cmd:'openTab', data:oRequestData}, function(response) {
+							chrome.runtime.sendMessage({cmd:'openTab', data:oRequestData}, function(response) {
 								var oData = {
 									code : 1,
 									msg : 'ok',
@@ -54,9 +54,9 @@ JH.request = JH.newFun(function (JH) {
 							});
 						});
 						break;
-					case 'getJsonString':
+					case 'getJson':
 						oRe = buildSend(function (oRequestData, fResponse) {
-							window.jsonHandleSendRequest({cmd:'getJson'}, function(response) {
+							chrome.runtime.sendMessage({cmd:'getJson', id: oRequestData}, function(response) {
 								var oData = {
 									code : 1,
 									msg : 'ok',
@@ -64,11 +64,18 @@ JH.request = JH.newFun(function (JH) {
 								};
 								fResponse(oData);
 							});
+							
+							// var oData = {
+							// 	code : 1,
+							// 	msg : 'ok',
+							// 	data : oRequestData
+							// };
+							// fResponse(oData);
 						});
 						break;
 					case 'getAdData':
 						oRe = buildSend(function (oRequestData, fResponse) {
-							window.jsonHandleSendRequest({
+							chrome.runtime.sendMessage({
 								cmd:'getAdData',
 								data : {
 									url : oRequestData.url
@@ -85,14 +92,11 @@ JH.request = JH.newFun(function (JH) {
 						break;
 					case 'setIni':
 						oRe = buildSend(function (oRequestData, fResponse) {
-							window.jsonHandleSendRequest({
-								cmd:'setIni'
-								, oIni : oRequestData
-							}, function(response) {
+							jsonhandleCommon.setIni(oRequestData, function(oIni) {
 								var oData = {
 									code : 1,
 									msg : 'ok',
-									data : response
+									data : oRequestData
 								};
 								fResponse(oData);
 							});
@@ -100,42 +104,11 @@ JH.request = JH.newFun(function (JH) {
 						break;
 					case 'getIni':
 						oRe = buildSend(function (oRequestData, fResponse) {
-							window.jsonHandleSendRequest({
-								cmd:'getIni'
-							}, function(response) {
-								var oDefault = {
-									"able": true,
-									"lang": 'en',
-									"holdPanel": false,
-									"showValue": true,
-									"showIco": false,
-									"showStyle": "",
-									"showImg": true,
-									"hideAdList": true,
-									"showImgMode": 'hover',
-									"openJhMode": 'win',
-									"showArrLeng": false,
-									"showLengthMode": 'array',
-									"saveKeyStatus": true,
-									"adVer" : 0,
-									"adIndex" : 0,
-									"adShoot" : {},
-									"adList" : [],
-									"times" : 0
-								};
-								for (var k in oDefault) {
-									if(response[k] === undefined) {
-										response[k] = oDefault[k];
-									}
-								}
-								localStorage['jhIni'] = JSON.stringify(response);
-								var oData = {
-									code : 1,
-									msg : 'ok',
-									data : response
-								};
-								fResponse(oData);
-							});
+							jsonhandleCommon.getIni(oIni => fResponse({
+								code : 1,
+								msg : 'ok',
+								data : oIni
+							}));
 						});
 						break;
 					

@@ -1,15 +1,9 @@
-// chrome.extension = chrome.extension || {
-// 	sendRequest : function (o, f) {
+// chrome.runtime = chrome.runtime || {
+// 	onMessage : function (o, f) {
 // 		config.mode = '';
 // 		f({});
 // 	}
 // };
-
-
-window.jsonHandleSendRequest = function (o, f) {
-	config.mode = '';
-	f({});
-}
 
 
 
@@ -24,21 +18,63 @@ JH.request({}).create(null, 'getIni', {succeed : function (oResp) {
 			JH.md.jsonH.language = oIni.lang;
 			JH.md.jsonH.oIni = oIni;
 			_pri.oIni = oIni;
+			_pri.inited = false;
 			if(config.mode === 'request') {
 				var jsonH_Request = JH.request(_pub);
-				var getJsonStringRequest = jsonH_Request.create(JH.request.NS.jsonH, 'getJsonString', {succeed : function (oResponseData, oRequestData) {
-
-					//try{
-						_pri.startJsonH(oResponseData.data);
-					//}
-					//catch(e) {
-						//_pri.jsonH_error(oResponseData.data);
-					//}
-				}});
-				try{
-					getJsonStringRequest.send('first view');
-				}catch(e) {
-					_pri.startJsonH();
+				if (~location.href.indexOf('type=iframe')) {
+					// chrome.tabs.get(
+					// 	tabId: number,
+					// 	callback?: function,
+					// )
+					window.addEventListener("message", function (evt) {
+						if (evt.data.cmd == 'postJson' && !_pri.inited) {
+							_pri.inited = true;
+							try{
+								_pri.startJsonH(evt.data.json.string);
+								// getJsonStringRequest.send(evt.data.id);
+							}catch(e) {
+								_pri.startJsonH();
+							}
+							setTimeout(() => {
+								top.postMessage({
+									cmd : 'jhRenderEnd'
+								}, '*');
+							});
+						}
+					});
+					// window.addEventListener("message", function (evt) {debugger;
+					// 	if (evt.data.cmd = 'postJson') {
+					// 		try{
+					// 			getJsonStringRequest.send({
+					// 				cmd: 'getJson',
+					// 				id: evt.data.id
+					// 			});
+					// 		}catch(e) {
+					// 			_pri.startJsonH();
+					// 		}
+					// 	}
+					// }, false);
+					top.postMessage({
+						cmd : 'jhLoadedOk'
+					}, '*');
+					
+				}else{
+					var getJsonStringRequest = jsonH_Request.create(JH.request.NS.jsonH, 'getJson', {succeed : function (oResponseData, oRequestData) {
+						//try{
+							if (!_pri.inited) {
+								_pri.inited = true;
+								_pri.startJsonH(oResponseData.data);
+							}
+						//}
+						//catch(e) {
+							//_pri.jsonH_error(oResponseData.data);
+						//}
+					}});
+					try{
+						getJsonStringRequest.send('first view');
+					}catch(e) {
+						_pri.startJsonH();
+					}
 				}
 				
 			}else if(config.mode === 'script_string') {
@@ -52,6 +88,9 @@ JH.request({}).create(null, 'getIni', {succeed : function (oResp) {
 		};
 		
 		_pri["startJsonH"] = function (sJson) {
+			if(_pri.oIni.fontUse) {
+				$('head').append('<style type="text/css"> body,  button,  input,  textarea {font-family:'+_pri.oIni.fontUse+';}</style>');
+			}
 			var oJH = JH.md.jsonH(sJson);
 			JH.e('#enterValue').select();
 
@@ -71,7 +110,7 @@ JH.request({}).create(null, 'getIni', {succeed : function (oResp) {
 				JH.e('#icoAsFolder').checked = _pri.oIni.showStyle == 'folder';
 				oJH.checkIcoAsFolderBtn(JH.e('#icoAsFolder'));
 
-				if(_pri.oIni.holdPanel) {
+				if(_pri.oIni.panelMode === 'always') {
 					oJH.showPanel(true);
 				}else{
 					oJH.hidePanel(true);

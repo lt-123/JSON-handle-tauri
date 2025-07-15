@@ -8,13 +8,13 @@ JH.mod.add(['treeNav'], 'jsonH.nav', function (modName, JH, $$) {
 
 
 		var _pri_static = {
-			
+
 		};
 
 
 
 		var _pro_static = {
-			
+
 		};
 
 
@@ -38,16 +38,19 @@ JH.mod.add(['treeNav'], 'jsonH.nav', function (modName, JH, $$) {
 
 		JH.mergePropertyFrom(_pri, {
 
-			
+
 			"encodeToXMLchar" : function (sValue) {
 				return sValue.replace(/\&/g,'&amp;').replace(/\</g,'&lt;').replace(/\>/g,'&gt;').replace(/\"/g,'&quot;');
 			},
 			"parsePathByElm" : function (eBlock) {
+				if (eBlock.nodePath) {
+					return eBlock.nodePath;
+				}
 				var aPath = [eBlock];
 				$(eBlock).parents('.elmBlock').each(function (sKey, eB) {
 					aPath.push(eB);
 				});
-				
+
 				var sPath = '';
 				aPath = aPath.reverse();
 				var aPathObj = [];
@@ -93,6 +96,50 @@ JH.mod.add(['treeNav'], 'jsonH.nav', function (modName, JH, $$) {
 				}
 				return '"' + sTxt + '"';
 			},
+            "renderTable": function (data) {
+                const table = document.createElement('table');
+                table.className = 'elmTable';
+
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+
+                const th = document.createElement('th');
+                // th.textContent = 'Index';
+                headerRow.appendChild(th);
+
+                Object.keys(data[0]).forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                });
+
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+
+                data.forEach((item, i) => {
+                    const row = document.createElement('tr');
+                    
+                    let eTdIndex = document.createElement('td');
+                    eTdIndex.textContent = i;
+                    row.appendChild(eTdIndex);
+
+                    Object.values(item).forEach(value => {
+                        const td = document.createElement('td');
+                        let eP = document.createElement('p');
+                        eP.textContent = value;
+                        td.appendChild(eP);
+                        row.appendChild(td);
+                    });
+                    
+                    tbody.appendChild(row);
+                });
+
+                table.appendChild(tbody);
+
+                return table;
+            },
 			"showLink" : function (sLink) {
 				$('#showLink').attr('href', sLink).show();
 			},
@@ -106,46 +153,46 @@ JH.mod.add(['treeNav'], 'jsonH.nav', function (modName, JH, $$) {
 		JH.mergePropertyFrom(_pro, {
 
 
-			"icoConfig" : {
-				'array' : {
-					className : 'open folder array',
-					icoName : 'arr.png'
-				},
-				'number' : {
-					className : 'node number',
-					icoName : 'num.png'
-				},
-				'string' : {
-					className : 'node string',
-					icoName : 'str.png'
-				},
-				'boolean' : {
-					className : 'node boolean',
-					icoName : 'boolean.png'
-				},
-				'null' : {
-					className : 'node null',
-					icoName : 'null.png'
-				},
-				'object' : {
-					className : 'open folder object',
-					icoName : 'obj.png'
-				}
-			},
+			// "icoConfig" : {
+			// 	'array' : {
+			// 		className : 'open folder array',
+			// 		icoName : 'arr.png'
+			// 	},
+			// 	'number' : {
+			// 		className : 'node number',
+			// 		icoName : 'num.png'
+			// 	},
+			// 	'string' : {
+			// 		className : 'node string',
+			// 		icoName : 'str.png'
+			// 	},
+			// 	'boolean' : {
+			// 		className : 'node boolean',
+			// 		icoName : 'boolean.png'
+			// 	},
+			// 	'null' : {
+			// 		className : 'node null',
+			// 		icoName : 'null.png'
+			// 	},
+			// 	'object' : {
+			// 		className : 'open folder object',
+			// 		icoName : 'obj.png'
+			// 	}
+			// },
 			"clickElmCallback" : function (eBlock) {
 
 
 				var oPath = _pri.parsePathByElm(eBlock);
 				$('#showPath').val(oPath);
 				$('#showPath').attr('parentPath', oPath.sParent);
-				
+
 				_pri.hideLink();
 
 				var sTxt ;
 				if(typeof eBlock.oData === 'string') {
 					sTxt = _pri.filterStringValue(eBlock.oData);
 				}else{
-					sTxt = _pub.JSON.stringify(eBlock.oData, null, 4);
+					sTxt = jsonhandleCommon.JSON.stringify(eBlock.oData, null, 4);
 				}
 				$('#showValue')
 					.val(sTxt)
@@ -164,20 +211,38 @@ JH.mod.add(['treeNav'], 'jsonH.nav', function (modName, JH, $$) {
 				}
 
 			},
+			"clickTableViewCallback" : function (eBlock) {
+                let $tree = $(eBlock).find('>.elmList').eq(0);
+                let $tableTool = $(eBlock).find('.row>.elmBox>.table-view').eq(0);
+                let $TableElm = $(eBlock).find('>.elmTable').eq(0);
+                if ($tableTool.hasClass('showTree')) {
+                    $tableTool.removeClass('showTree');
+                    if ($TableElm.length < 1) {
+                        $tree.before(_pri.renderTable(eBlock.oData));
+                    }
+                    $TableElm.show();
+                    $tree.hide();
+                }else{
+                    $tree.show();
+                    $TableElm.hide();
+                    $tableTool.addClass('showTree');
+                }
+                return false;
+			},
 			"overElmCallback" : function (eBlock) {
-				$('#pathTips').html($(eBlock).attr('nodePath'));
+				$('#pathTips').text($(eBlock).attr('nodePath'));
 			},
 			"outElmCallback" : function (eBlock) {
 				$('#pathTips').html('');
 
-				
+
 			},
-			"changeFlodCallback" : function () {_pub.changeFlodCallback && _pub.changeFlodCallback()},
+			"changeFlodCallback" : function (b) {_pub.changeFlodCallback && _pub.changeFlodCallback(b)},
 			"drawElmCallback" : function (eBlock) {
 				_parent._pro.drawElmCallback(eBlock);
 				$(eBlock).attr('nodePath', _pri.parsePathByElm(eBlock));
 			}
-			
+
 
 		});
 
@@ -188,7 +253,7 @@ JH.mod.add(['treeNav'], 'jsonH.nav', function (modName, JH, $$) {
 			},
 			"destroy" : function(){
 				if(_pub) {
-					
+
 					_pri = _pro = _pub = null;
 				}
 			}
@@ -200,12 +265,12 @@ JH.mod.add(['treeNav'], 'jsonH.nav', function (modName, JH, $$) {
 
 
 		return _pub;
-		
+
 	};
 
 	return JH.mergePropertyFrom(_pub_static, {
 
-		
+
 
 	});
 });

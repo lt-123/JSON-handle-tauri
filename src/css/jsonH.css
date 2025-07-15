@@ -1,31 +1,42 @@
 @import url(tree.css);
 
-body {margin:0px;padding:1em 1em 2.8em;font-family:Tahoma,arial,simsun;font-size:14px;background-color:#fafaff;}
+body {margin:0px;font-size:14px;background-color:#fafaff;}
 div,form,img,ol,dl,dt,dd,fieldset {margin:0;padding:0;border:0;}
 h1,h2,h3,h4,h5,h6,p {margin:0;padding:0;font-size:1em;}
 ul,ol,li {margin:0;padding:0;list-style:none;}
 em {font-style:normal;}
 hr {display:none;}
 
+body, button, input, textarea {
+	font-family:Tahoma,arial,simsun;
+}
+
+
 html {
 	height:100%;
 	visibility:visible !important;
 }
 /**/
-#jsonNav {height@:100%;}
-#panel {padding:12px 2px 12px 12px;width:512px;height:80%;@min-height:300px;position:fixed;z-index:10;right:1em;top:1em;border:1px solid #C8C8C8;border-color:#e7e7f3 #c8c8d8 #c8c8d8 #e7e7f3;background:#f3f5ff;box-shadow:4px 4px 9px rgba(0, 0, 50, 0.2), -3px -3px 30px rgba(88, 88, 188, 0.1) inset;
+#jsonNav {
+	overflow:auto;
+	height:calc( 100% - 26px );
+	box-sizing:border-box;
+	padding:1em 1em 2.8em;
+}
+#panel {padding:12px 2px 12px 12px;width:512px;height:80%;@min-height:300px;position:fixed;z-index:10;right:2em;top:1em;border:1px solid #C8C8C8;border-color:#e7e7f3 #c8c8d8 #c8c8d8 #e7e7f3;background:#f3f5ff;box-shadow:4px 4px 9px rgba(0, 0, 50, 0.2), -3px -3px 30px rgba(88, 88, 188, 0.1) inset;
 	transition:
 		height .2s ease-out
 		,width .2s ease-out
 	;
 }
+body{height:100%;}
 
 #panel.min {width:10px;height:3px;}
 #panel.disTransition {transition:none;}
 #showLink {display:none;position:absolute;right:27px;top:45px;}
 a#showLink:link, a#showLink:visited {color:#577cff;text-decoration:underline;}
 a#showLink:hover, a#showLink:active {color:#577cff;text-decoration:none;}
-#minBtn {position:absolute;right:5px;top:5px;cursor:pointer;color:#577cff;}
+#minBtn {position:absolute;right:5px;top:5px;padding-left:7px;z-index:1;cursor:pointer;color:#577cff;}
 #minBtn:hover {color:#87acff;}
 #valueAct {height:100%;overflow:auto;opacity:1;position:relative;
 	transition:
@@ -35,52 +46,60 @@ a#showLink:hover, a#showLink:active {color:#577cff;text-decoration:none;}
 #panel.min #valueAct {display@:none;opacity:0;height:1px;overflow:hidden;}
 #saveBtn {float:left;}
 #undoBtn {margin-left:4em;}
-#undoBtn, #redoBtn {float:left;font-family:Tahoma,arial,simsun;}
-#showPath {width:420px;background-color:#e3e4e9;}
-#showKey {width:200px;background-color:#e3e4e9;}
+#undoBtn, #redoBtn {float:left;}
+#showPath {width:420px;}
+#showKey {width:120px;}
+#showPath, #showKey {background-color:#dde1f3;outline-color: #122493;}
+#enterValue {outline-color: #92abff;}
 #showKey.isArrayElm {}
 #showKey.isArrayElm~span {visibility:hidden;}
 .lableInput #showKey~span {font-weight:bold;}
-#showValue {outline:0;width:462px;min-height:270px;padding:10px 12px;border:1px solid #b6b6c4;border-right-color:#eef;border-bottom-color:#eef;border-radius:2px;font-family:Tahoma,arial,simsun;box-shadow:1px 1px 6px rgba(33, 33, 98, .16) inset;}
+#showValue {outline:0;width:462px;min-height:250px;padding:10px 12px;border:1px solid #b6b6c4;border-right-color:#eef;border-bottom-color:#eef;border-radius:2px;box-shadow:1px 1px 6px rgba(33, 33, 98, .16) inset;}
 #showValue:focus {box-shadow:1px 1px 12px rgba(53, 53, 118, .26) inset;border:1px solid #d0d0ed;border-right-color:#ddf;border-bottom-color:#ddf;}
 .inputTitle {display:inline-block;width:4em;margin:0 0 1em;}
-#pathTips {height:1.5em;line-height:1.6em;width:100%;position:fixed;z-index:15;left:0;bottom:0;background-color:#eee;color:#666;padding:0.2em 1em 0;border-top:1px solid #fff;}
-button {border-radius:2px;margin:0.5em 0 0;font-family:Tahoma,arial,simsun;border-width: 1px;padding: 1px 8px 3px;}
+#pathTips {height:25px;line-height:1.6em;width:100%;position:fixed;z-index:15;left:0;bottom:0;background-color:#eee;color:#666;padding:0.2em 1em 0;border-top:1px solid #fff;}
+button {border-radius:2px;margin:0.5em 0 0;border-width: 1px;padding: 1px 8px 3px;border-color: #bbb #444 #444 #aaa;background-color: #fafcff;}
 #msgBox {color:red;font-size:12px;font-weight:bold;height:38px;line-height:14px;padding-right:24px;padding-top:5px;text-align:right;}
-.textInpub {padding:3px 6px;border-radius:2px;font-family:Tahoma,arial,simsun;}
+.textInpub {padding:3px 6px;border-radius:2px;border-color: #555 #bbb #ccc #555;border-width: 1px;}
 #mask {z-index:20;position:absolute;left:0;top:0;background-color:rgba(101, 123, 190,0.3);width:100%;height:100%;}
 #enterInputDialog {position:absolute;left:50%;top:50%;margin:-170px 0 0 -280px;padding:20px;width:560px;height:340px;text-align:right;border-radius:6px;box-shadow: 6px 5px 7px rgba(50, 50, 50, 0.4);background-color:#fafaff;border:1px solid #e8e8e8;}
-#enterValue {width:530px;height:265px;margin:5px 0 0;border-radius:2px;padding:15px;box-shadow:1px 1px 10px rgba(88, 88, 188, 0.18) inset;border-color:#888 #ddd #ddd #888;font-family:Tahoma,arial,simsun;}
+#enterValue {width:530px;height:265px;margin:5px 0 0;border-radius:2px;padding:15px;box-shadow:1px 1px 10px rgba(88, 88, 188, 0.18) inset;border-color:#888 #ddd #ddd #888;}
 #enterInputTips {text-align:left;line-height:1.5em;}
 .tools2 {padding:0 1em 0 0;text-align:right;}
+
 
 .noIco .ico {display:none;}
 .folderIco .ico {display:none;}
 .folderIco .elmBox {padding:0 0 0 20px;}
-.folderIco .node .elmBox {background-image:url(treePic/elm.png);background-position:2px 0;background-repeat:no-repeat;}
-.folderIco .elmBox {background-image:url(treePic/objectOpen.png);background-position:2px 0;background-repeat:no-repeat;}
-.noIco.folderIco .elmBox {background-image:none;padding:0;}
+.folderIco .node .elmBox {background-image:url(treePic/elm.png);background-size:24px 22px;background-position:2px 0;background-repeat:no-repeat;}
+.folderIco .elmBox {background-image:url(treePic/object.png);background-size:24px 22px;background-position:2px 0;background-repeat:no-repeat;}
+.folderIco .open>.row>.elmBox {background-image:url(treePic/objectOpen.png);}
+.noIco.folderIco .elmBox,
+.noIco.folderIco .open>.row>.elmBox {background-image:none;padding:0;}
 
-.value {display:none;padding:0 8px}
+.value {display:none;padding:0 8px;}
+.showTextFormat .value{white-space: pre;}
 .object>.row .elm {color:#333;font-weight:normal;}
-.object>.row .elm:after {content:"";}
-.object>.elmList>.elmBlock>.row .elm:after {}
 .array>.elmList>.elmBlock>.row .elm {font-weight:normal;color:#000;display@:none;}
-.array>.elmList>.elmBlock>.row .elm.array-key {color:#aaa;}
+.array>.elmList>.elmBlock>.row .elm.array-key {color:#fb8dc4;}
 .showValueInNav .array>.elmList>.node>.row .elm {display:none;}
+.showValueInNav.showArrIndexInNav .array>.elmList>.node>.row .elm {display:inline;}
 .showValueInNav .array>.elmList>.array>.row .elm {display:inline;}
 .array>.elmList>.array>.row .elm {}
-.elm, .array>.elmList>.array>.row .elm {color:#4a0;font-weight:bold;display:inline;}
-.showValueInNav .elm:after {content:"  :";color:#2c3;font-weight:bold;}
+.elm {color:#4a0;font-weight:bold;display:inline;vertical-align: top;}
+.array>.row>.elmBox>.elmSpan>.elm {color:#ef5c85;}
+.showValueInNav .elm:after {color:#bdbdbd;font-weight:bold;margin-left: 4px;}
 .showValueInNav .cur>.row .elm:after {color:#fff;}
-.array>.elmList>.array>.row .elm:after {content:"";color:#2c3;font-weight:bold;}
+/* .array>.elmList>.array>.row .elm:after {content:"";color:#2c3;font-weight:bold;} */
 .showValueInNav .value {display:inline-block;}
-.showValueInNav .array>.elmList>.elmBlock>.row .elm {}
+.showValueInNav .elm:after {content:":";}
 .string>.row .value {color:#f63;float@:left;}
 .string>.row .value img {display:none;border:1px solid #8C9ACA;}
 .showImg .string>.row .value img {display:inline;}
 .showImg .imgUrl.elmBlock>.row .elm {vertical-align:sub;}
 .showImg .value.has-img {padding-bottom:8px;vertical-align:text-top;}
+.bottomBox {font-size:12px;}
+.bottomBox input {vertical-align: middle;}
 .number>.row .value {color:#cc00ff;}
 .null>.row .value {color:#bb4;}
 .boolean>.row .value {color:#09c;}
@@ -115,6 +134,15 @@ button {border-radius:2px;margin:0.5em 0 0;font-family:Tahoma,arial,simsun;borde
 }
 .copy-tips.show {
 	opacity:1;
+}
+.deError-tips {
+	color:#e33;
+}
+.deError-tips.hide {
+	display:none;
+}
+.deError-tips.show {
+	display:inline;
 }
 #hideBox {
 	width:1px;
@@ -239,7 +267,7 @@ button {border-radius:2px;margin:0.5em 0 0;font-family:Tahoma,arial,simsun;borde
 	padding:0;
 	margin:0;
 	position:absolute;
-	bottom:15px;
+	bottom:9px;
 	right:15px;
 	display:block;
 	width:24px;
@@ -253,6 +281,71 @@ button {border-radius:2px;margin:0.5em 0 0;font-family:Tahoma,arial,simsun;borde
 }
 .setting-btn:active {
 	background:url(img/setting-btn.png) no-repeat 0 0;
+}
+
+#toolsBtn {
+	position: absolute;
+	right: 18px;
+	top: 6px;
+}
+#toolsBtn button {
+
+	color:#859ae5;
+}
+.table-view {
+    vertical-align: middle;
+}
+.table-view path{
+    fill:#aaa;
+}
+.table-view:hover path{
+    fill:#577cff;
+}
+.table-view.showTree .tree-ico {
+    display: none;
+}
+.table-view.showTree .table-ico {
+    display: inline-block;
+}
+.table-view .table-ico {
+    display: none;
+}
+table.elmTable  {
+    cursor: default;
+    border-collapse: collapse;
+    margin:.7em 1.4em;
+}
+table.elmTable tr:hover {
+    background-color: #fff;
+}
+.elmTable thead {
+    position: sticky;
+    top:0;
+}
+.elmTable th, .elmTable td {
+    vertical-align: text-top;
+    border: 1px solid #e5e5e5;
+    padding: 8px;
+    text-align: left;
+}
+.elmTable th {
+    background-color: #f8f8f8;
+    color:#4a0;
+}
+.elmTable td p {
+    text-overflow: ellipsis;
+    max-height: 5.96em;
+    max-width: 40em;
+    overflow: hidden;
+}
+.noLimitTdHeight .elmTable td p {
+    max-height: none;
+}
+.limitTdWrap .elmTable td p {
+    white-space: nowrap;
+}
+.elmTable tbody tr td:first-child {
+    color:#fb8dc4;
 }
 
 .array-leng {
@@ -279,9 +372,15 @@ button {border-radius:2px;margin:0.5em 0 0;font-family:Tahoma,arial,simsun;borde
 .elmBlock.open>.elmList {
 	display:block;
 }
+.elmBlock>.elmTable {
+	display:none;
+}
+.elmBlock.open>.elmTable {
+	display:block;
+}
 
 
-.rich .treeNav {text-shadow: -2px 1px 3px rgba(70, 70, 70, 0.2);}
+.rich .treeNav {text-shadow: -2px 1px 3px rgba(110, 110, 110, 0.17);}
 .rich .treeNav .cur>.row .elmSpan {box-shadow: -3px 3px 5px rgba(50, 50, 50, 0.4);}
 .rich .treeNav .show-leng .array-leng {box-shadow:-2px 1px 3px rgba(70, 70, 70, 0.2);}
 
@@ -302,13 +401,14 @@ button {border-radius:2px;margin:0.5em 0 0;font-family:Tahoma,arial,simsun;borde
 .dark .treeNav .row {line-height:22px;}
 .dark .treeNav .elmBlock .row {background-position-y:-2px;}
 .dark .treeNav .elm {padding: 3px 8px;}
+.dark .treeNav .array>.row>.elmBox>.elmSpan>.elm {color:#a34b64`;}
 .dark .treeNav .value {padding: 0 8px 0 4px;}
 .dark .treeNav .ico {margin-top:-2px;}
 
 .dark .treeNav .cur>.row .elmSpan {background-color:#3a4c63;}
-.dark .object>.row .elm {color:#999;}
+.dark .object>.row .elm {color:#a3a3a3;}
 .dark .array>.elmList>.elmBlock>.row .elm {color:#999;}
-.dark .array>.elmList>.elmBlock>.row .elm.array-key {color:#bbb;}
+.dark .array>.elmList>.elmBlock>.row .elm.array-key {color:#8d3d65;}
 .dark .show-leng .array-leng {color:#777;background-color:#444;}
 .dark .elm, .array>.elmList>.array>.row .elm {color:#6e9354;}
 .dark .showValueInNav .elm:after {color:#346739;}
@@ -323,14 +423,14 @@ button {border-radius:2px;margin:0.5em 0 0;font-family:Tahoma,arial,simsun;borde
 .dark .treeNav .root.elmBlock>.row {background-image:url(treePic/folderRoot_b.png);}
 .dark .treeNav .root.open.elmBlock>.row {background-image:url(treePic/openRoot_b.png);}
 .dark .treeNav .folder>.row {background-image:url(treePic/folder_b.png);}
-.dark .treeNav .last.folder>.row {background-image:url(treePic/folderLast_b.png);}
-.dark .treeNav .last.node>.row, 
-.dark .treeNav .empty.elmBlock.last>.row {background-image:url(treePic/nodeLast.png);}
+.dark .treeNav .elmList>li.folder:last-child>.row {background-image:url(treePic/folderLast_b.png);}
+.dark .treeNav .elmList>li.node:last-child>.row,
+.dark .treeNav .empty.elmBlock>li:last-child>.row {background-image:url(treePic/nodeLast.png);}
 .dark .treeNav .open>.row {background-image:url(treePic/open_b.png);}
-.dark .treeNav .open.last>.row {background-image:url(treePic/openLast_b.png);}
+.dark .treeNav .elmList>li.open:last-child>.row {background-image:url(treePic/openLast_b.png);}
 .dark .treeNav .open.root>.row {background-image:url(treePic/open_b.png);}
 .dark .treeNav .empty>.row {background-image:url(treePic/node.png);}
-.dark .treeNav .last.node>.row {background-image:url(treePic/nodeLast.png);}
+.dark .treeNav .elmList>li.node:last-child>.row {background-image:url(treePic/nodeLast.png);}
 
 .dark #msgBox {color:#ff6969;}
 .dark #panel a#showLink:link,
